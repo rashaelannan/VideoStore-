@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Video Store</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 2rem auto; }
+    a.button { padding: .5rem .75rem; border: 1px solid #333; text-decoration: none; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border-bottom: 1px solid #ddd; padding: .5rem; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>Video Store</h1>
+  <a class="button" href="{% url 'video-add' %}">+ Add New Video</a>
+
+  {% if videos %}
+    <table>
+      <thead>
+        <tr>
+          <th>MovieID</th>
+          <th>Title</th>
+          <th>Genre</th>
+          <th>Year</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for v in videos %}
+        <tr>
+          <td>{{ v.MovieID }}</td>
+          <td><a href="{% url 'video-detail' v.pk %}">{{ v.MovieTitle }}</a></td>
+          <td>{{ v.MovieGenre }}</td>
+          <td>{{ v.ReleaseYear }}</td>
+          <td>
+            <a href="{% url 'video-edit' v.pk %}">Edit</a> |
+            <a href="{% url 'video-delete' v.pk %}">Delete</a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No videos yet. Add one!</p>
+  {% endif %}
+</body>
+</html>
+
