@@ -1,0 +1,46 @@
+pipeline {
+  agent any
+  // Use webhook if you can; otherwise uncomment polling:
+  // triggers { pollSCM('H/2 * * * *') }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        // ⬇️ replace with your repo URL if job isn't configured to do SCM checkout
+        git branch: 'main', url: 'https://github.com/rashaelannan/VideoStore-.git'
+      }
+    }
+
+    stage('Build & Deploy to Minikube (macOS)') {
+      steps {
+        sh '''
+          set -e
+
+          # Point this shell’s Docker to Minikube’s Docker daemon
+          eval $(minikube -p minikube docker-env)
+
+          # Build the app image *inside* Minikube
+          docker build -t videostore-app:latest .
+
+          # Apply Kubernetes manifests and wait for rollout
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
+          kubectl rollout status deploy/videostore-deployment
+
+          # Show what’s running
+          kubectl get deploy,rs,pods,svc -o wide
+        '''
+      }
+    }
+  }
+
+  post {
+    success {
+      sh '''
+        # Print the service URL (non-blocking)
+        minikube service videostore-service --url || true
+      '''
+    }
+  }
+}
+

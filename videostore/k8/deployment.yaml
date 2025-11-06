@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: videostore-deployment
+  labels: { app: videostore }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: videostore }
+  template:
+    metadata:
+      labels: { app: videostore }
+    spec:
+      containers:
+        - name: videostore
+          image: videostore-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000   # your app listens on 8000 (as in Docker Desktop)
+          env:
+            - name: PORT
+              value: "8000"
+          readinessProbe:
+            httpGet: { path: "/", port: 8000 }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: "/", port: 8000 }
+            initialDelaySeconds: 30
+            periodSeconds: 10
+
