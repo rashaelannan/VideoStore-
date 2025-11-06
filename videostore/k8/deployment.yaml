@@ -14,7 +14,7 @@ spec:
       containers:
         - name: videostore
           image: videostore-app:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Never
           ports:
             - containerPort: 8000   # your app listens on 8000 (as in Docker Desktop)
           env:
